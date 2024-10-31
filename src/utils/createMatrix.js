@@ -5,6 +5,7 @@
  */
 export default function createMatrix(side) {
   let matrix = [];
+
   const size = side * side;
 
   // for graph creation

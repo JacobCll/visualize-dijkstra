@@ -1,5 +1,21 @@
 .tileBox {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
+  border: 1px solid white;
   background-color: grey;
+}
+
+.tileBox:hover {
+  cursor: pointer;
+  background-color: #737373;
+}
+
+.source,
+.source:hover {
+  background-color: #669acc;
+}
+
+.target,
+.target:hover {
+  background-color: #f89345;
 }
