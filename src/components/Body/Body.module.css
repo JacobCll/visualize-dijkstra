@@ -24,6 +24,10 @@ p {
   gap: 20px;
 }
 
-.controlPanel button {
+button {
   cursor: pointer;
+}
+
+.error {
+  color: red;
 }

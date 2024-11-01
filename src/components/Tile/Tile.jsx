@@ -10,6 +10,14 @@ export default function Tile({ props, nodeIndex }) {
     ) {
       if (nodeIndex !== props.target) {
         props.setSource(nodeIndex);
+
+        const distances = Array(props.graph.length).fill(Infinity);
+        const prevNodes = [];
+        distances[nodeIndex] = 0;
+        prevNodes[nodeIndex] = 0;
+
+        props.setDistances(distances);
+        props.setPrevNodes(prevNodes);
       }
     } else if (
       props.initStatus === "target" &&
@@ -24,7 +32,13 @@ export default function Tile({ props, nodeIndex }) {
     <div
       className={`${styles.tileBox} ${
         props.target === nodeIndex ? styles.target : ""
-      } ${props.source === nodeIndex ? styles.source : ""}`}
+      } ${props.source === nodeIndex ? styles.source : ""} ${
+        props.nodePath.includes(nodeIndex) &&
+        nodeIndex !== props.source &&
+        nodeIndex !== props.target
+          ? styles.path
+          : ""
+      }`}
       onClick={handleOnClick}
     ></div>
   );

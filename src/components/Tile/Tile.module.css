@@ -19,3 +19,8 @@
 .target:hover {
   background-color: #f89345;
 }
+
+.path,
+.path:hover {
+  background-color: black;
+}

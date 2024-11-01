@@ -5,8 +5,7 @@ import { useEffect, useState } from "react";
 
 // adjacency matrix
 export default function Body() {
-  const [sideLength, setSideLength] = useState(10);
-
+  const [error, setError] = useState("");
   /**
    * 3 main statuses / stages:
    *  1. initialization - selection of source and target node
@@ -22,35 +21,104 @@ export default function Body() {
    */
   const [initStatus, setInitStatus] = useState("source");
 
+  const [sideLength, setSideLength] = useState(15);
+
   const [graph, setGraph] = useState(() => createMatrix(sideLength));
 
   const [distances, setDistances] = useState(
     Array(graph.length).fill(Infinity)
   );
-  const [visited, setVisited] = useState(Array(graph.length).fill(false));
+  const [visited, setVisited] = useState([]);
   const [prevNodes, setPrevNodes] = useState([]);
 
   const [source, setSource] = useState(null);
   const [target, setTarget] = useState(null);
-  useEffect(() => {
-    console.log(
-      "Body component mounted for the first time or graph side changed"
-    );
-    // when graph changes, reset everything
+
+  const [nodePath, setNodePath] = useState([]);
+
+  const reset = () => {
     setGraph(createMatrix(sideLength));
     setMainStatus("initialization");
     setInitStatus("source");
     setDistances(Array(graph.length).fill(Infinity));
-    setVisited(Array(graph.length).fill(false));
+    setVisited([]);
     setPrevNodes([]);
     setSource(null);
     setTarget(null);
+    setError("");
+    setNodePath([]);
+  };
+
+  useEffect(() => {
+    // when graph changes, reset everything
+    reset();
   }, [sideLength]);
 
-  console.log(source, target);
+  // return the index with the minimum and unvisited distance value
+  const _minDistance = (distancesArray, visitedArray) => {
+    let minDistance = Infinity;
+    let minVertex;
+
+    for (let i = 0; i < graph.length; i++) {
+      if (distancesArray[i] < minDistance && !visitedArray.includes(i)) {
+        minDistance = distancesArray[i];
+        minVertex = i;
+      }
+    }
+    return minVertex;
+  };
+
+  const handleOnStart = () => {
+    if (source === null || target === null) {
+      setError("source node / target node missing");
+      return;
+    }
+
+    setMainStatus("computation");
+    setError("");
+
+    let visitedTemp = [...visited];
+    let distancesTemp = [...distances];
+    let prevNodesTemp = [...prevNodes];
+
+    for (let i = 0; i < graph.length; i++) {
+      let u = _minDistance(distancesTemp, visitedTemp);
+      visitedTemp.push(u);
+
+      if (u === target) {
+        break;
+      }
+
+      for (let j = 0; j < graph.length; j++) {
+        if (
+          graph[u][j] != 0 &&
+          !visitedTemp.includes(j) &&
+          graph[u][j] + distancesTemp[u] < distancesTemp[j]
+        ) {
+          distancesTemp[j] = graph[u][j] + distancesTemp[u];
+          prevNodesTemp[j] = u;
+        }
+      }
+    }
+
+    let currentNode = target;
+    let pathArray = [currentNode];
+    while (distancesTemp[currentNode] != 0) {
+      pathArray.unshift(prevNodesTemp[currentNode]);
+      currentNode = prevNodesTemp[currentNode];
+    }
+
+    setDistances(distancesTemp);
+    setVisited(visitedTemp);
+    setPrevNodes(prevNodesTemp);
+    setNodePath(pathArray);
+
+    setMainStatus("completed");
+  };
+
   return (
     <div className={styles.bodyContainer}>
-      <p className={styles.statusText}>Status: {mainStatus}</p>
+      <p className={styles.statusText}>status: {mainStatus}</p>
       <div className={styles.controlPanel}>
         <button
           disabled={initStatus === "source"}
@@ -65,6 +133,7 @@ export default function Body() {
           Select target
         </button>
       </div>
+      {error && <p className={styles.error}>{error}</p>}
       <Tiles
         props={{
           graph,
@@ -80,9 +149,13 @@ export default function Body() {
           setTarget,
           mainStatus,
           initStatus,
+          nodePath,
         }}
       />
-      <button disabled={mainStatus !== "computation"}>Start</button>
+      <button disabled={mainStatus === "computation"} onClick={handleOnStart}>
+        Start
+      </button>
+      <button onClick={reset}>Reset</button>
     </div>
   );
 }
