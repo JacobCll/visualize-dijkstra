@@ -24,24 +24,56 @@ export default function createMatrix(side) {
         matrix[upperNode][nodeIndex] = 1;
         matrix[nodeIndex][upperNode] = 1;
       }
+
       // bottom
       if (i < side - 1) {
         const lowerNode = nodeIndex + side;
         matrix[lowerNode][nodeIndex] = 1;
         matrix[nodeIndex][lowerNode] = 1;
       }
-      // left
+
       if (j > 0) {
+        // left
         const leftNode = nodeIndex - 1;
         matrix[leftNode][nodeIndex] = 1;
         matrix[nodeIndex][leftNode] = 1;
       }
+
       // right
       if (j < side - 1) {
         const rightNode = nodeIndex + 1;
         matrix[rightNode][nodeIndex] = 1;
         matrix[nodeIndex][rightNode] = 1;
       }
+
+      // // DIAGONAL NODES
+      // // upper left diagonal
+      // if (i > 0 && j > 0) {
+      //   const upperLeftNode = nodeIndex - side - 1;
+      //   matrix[nodeIndex][upperLeftNode] = 2;
+      //   matrix[upperLeftNode][nodeIndex] = 2;
+      // }
+
+      // // upper right diagonal
+      // if (i > 0 && j < side - 1) {
+      //   const upperRightNode = nodeIndex - side + 1;
+      //   matrix[nodeIndex][upperRightNode] = 2;
+      //   matrix[upperRightNode][nodeIndex] = 2;
+      // }
+
+      // // bottom left diagonal
+      // if (i < side - 1 && j > 0) {
+      //   const lowerLeftNode = nodeIndex + side - 1;
+      //   matrix[nodeIndex][lowerLeftNode] = 2;
+      //   matrix[lowerLeftNode][nodeIndex] = 2;
+      // }
+
+      // // bottom right diagonal
+      // if (i < side - 1 && j < side - 1) {
+      //   const lowerRightNode = nodeIndex + side + 1;
+      //   matrix[nodeIndex][lowerRightNode] = 2;
+      //   matrix[lowerRightNode][nodeIndex] = 2;
+      // }
     }
   }
 

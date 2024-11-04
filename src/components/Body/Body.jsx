@@ -2,6 +2,7 @@ import styles from "./Body.module.css";
 import Tiles from "../Tiles/Tiles";
 import createMatrix from "../../utils/createMatrix";
 import { useEffect, useState } from "react";
+import addObstacles from "../../utils/addObstacles";
 
 // adjacency matrix
 export default function Body() {
@@ -21,7 +22,7 @@ export default function Body() {
    */
   const [initStatus, setInitStatus] = useState("source");
 
-  const [sideLength, setSideLength] = useState(15);
+  const [sideLength, setSideLength] = useState(10);
 
   const [graph, setGraph] = useState(() => createMatrix(sideLength));
 
@@ -33,11 +34,11 @@ export default function Body() {
 
   const [source, setSource] = useState(null);
   const [target, setTarget] = useState(null);
+  const [obstacles, setObstacles] = useState([]);
 
   const [nodePath, setNodePath] = useState([]);
 
   const reset = () => {
-    setGraph(createMatrix(sideLength));
     setMainStatus("initialization");
     setInitStatus("source");
     setDistances(Array(graph.length).fill(Infinity));
@@ -50,9 +51,15 @@ export default function Body() {
   };
 
   useEffect(() => {
-    // when graph changes, reset everything
+    // when graph size changes, reset everything
+    setGraph(() => createMatrix(sideLength));
+    setObstacles([]);
     reset();
   }, [sideLength]);
+
+  useEffect(() => {
+    setGraph(() => addObstacles(graph, obstacles, sideLength));
+  }, [obstacles]);
 
   // return the index with the minimum and unvisited distance value
   const _minDistance = (distancesArray, visitedArray) => {
@@ -87,6 +94,9 @@ export default function Body() {
 
       if (u === target) {
         break;
+      } else if (u == undefined) {
+        setError("no path found");
+        return;
       }
 
       for (let j = 0; j < graph.length; j++) {
@@ -118,20 +128,55 @@ export default function Body() {
 
   return (
     <div className={styles.bodyContainer}>
-      <p className={styles.statusText}>status: {mainStatus}</p>
+      <div className={styles.topControlPanel}>
+        <div className={styles.sizeSelect}>
+          <label for="size-select">Select size:</label>
+          <select
+            name="sizes"
+            id="size-select"
+            value={sideLength}
+            onChange={(e) => setSideLength(Number(e.target.value))}
+          >
+            <option value="5">5x5</option>
+            <option value="10">10x10</option>
+            <option value="15">15x15</option>
+            <option value="20">20x20</option>
+            <option value="25">25x25</option>
+          </select>
+        </div>
+
+        <p className={styles.statusText}>Status: {mainStatus}</p>
+      </div>
+
       <div className={styles.controlPanel}>
         <button
-          disabled={initStatus === "source"}
+          disabled={initStatus === "source" || mainStatus === "completed"}
           onClick={() => setInitStatus("source")}
         >
           Select source
         </button>
         <button
-          disabled={initStatus === "target"}
+          disabled={initStatus === "target" || mainStatus === "completed"}
           onClick={() => setInitStatus("target")}
         >
           Select target
         </button>
+        <button
+          disabled={initStatus === "obstacle" || mainStatus === "completed"}
+          onClick={() => setInitStatus("obstacle")}
+        >
+          Set obstacles
+        </button>
+        {obstacles.length > 0 && (
+          <button
+            onClick={() => {
+              setObstacles([]);
+              setGraph(() => createMatrix(sideLength));
+            }}
+          >
+            Clear obstacles
+          </button>
+        )}
       </div>
       {error && <p className={styles.error}>{error}</p>}
       <Tiles
@@ -150,12 +195,19 @@ export default function Body() {
           mainStatus,
           initStatus,
           nodePath,
+          obstacles,
+          setObstacles,
         }}
       />
-      <button disabled={mainStatus === "computation"} onClick={handleOnStart}>
-        Start
-      </button>
-      <button onClick={reset}>Reset</button>
+      <div className={styles.bottomControlPanel}>
+        <button
+          disabled={mainStatus === "computation" || mainStatus === "completed"}
+          onClick={handleOnStart}
+        >
+          Start
+        </button>
+        <button onClick={reset}>Reset</button>
+      </div>
     </div>
   );
 }

@@ -24,3 +24,8 @@
 .path:hover {
   background-color: black;
 }
+
+.obstacle,
+.obstacle:hover {
+  background-color: brown;
+}

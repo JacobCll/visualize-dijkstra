@@ -17,11 +17,30 @@ p {
   color: blue;
 }
 
+.topControlPanel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
 .controlPanel {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 20px;
+}
+
+.bottomControlPanel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.sizeSelect {
+  display: flex;
+  gap: 5px;
 }
 
 button {
