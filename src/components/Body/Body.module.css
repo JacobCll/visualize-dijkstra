@@ -50,3 +50,9 @@ button {
 .error {
   color: red;
 }
+
+.eraser:enabled,
+.clearAllObstacles {
+  color: darkred;
+  border-color: red;
+}

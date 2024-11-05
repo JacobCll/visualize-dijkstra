@@ -17,8 +17,10 @@ export default function Body() {
 
   /**
    * 2 initialization statuses
-   *  1. source - selecting of source node
-   *  2. target - selecting of target node
+   *  1. source - selection of source node
+   *  2. target - selection of target node
+   *  3. obstacle - setting graph obstacles
+   *  4. eraser - erasing obstacles from graph
    */
   const [initStatus, setInitStatus] = useState("source");
 
@@ -169,12 +171,11 @@ export default function Body() {
         </button>
         {obstacles.length > 0 && (
           <button
-            onClick={() => {
-              setObstacles([]);
-              setGraph(() => createMatrix(sideLength));
-            }}
+            className={styles.eraser}
+            disabled={obstacles.length === 0}
+            onClick={() => setInitStatus("eraser")}
           >
-            Clear obstacles
+            Eraser
           </button>
         )}
       </div>
@@ -207,6 +208,17 @@ export default function Body() {
           Start
         </button>
         <button onClick={reset}>Reset</button>
+        {obstacles.length > 0 && (
+          <button
+            className={styles.clearAllObstacles}
+            onClick={() => {
+              setObstacles([]);
+              setGraph(() => createMatrix(sideLength));
+            }}
+          >
+            Clear all obstacles
+          </button>
+        )}
       </div>
     </div>
   );

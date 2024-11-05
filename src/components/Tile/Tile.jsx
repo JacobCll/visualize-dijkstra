@@ -2,7 +2,24 @@ import styles from "./Tile.module.css";
 import { useState } from "react";
 
 // Tile component has all props of Tiles parent container
-export default function Tile({ props, nodeIndex }) {
+export default function Tile({ props, nodeIndex, isPainting, setIsPainting }) {
+  const isValidObstacle =
+    props.initStatus === "obstacle" &&
+    props.mainStatus === "initialization" &&
+    nodeIndex !== props.source &&
+    nodeIndex !== props.target;
+
+  const handleObstacleSelect = () => {
+    if (
+      props.initStatus === "obstacle" &&
+      props.mainStatus === "initialization" &&
+      nodeIndex !== props.source &&
+      nodeIndex !== props.target
+    ) {
+      props.setObstacles([...props.obstacles, nodeIndex]);
+    }
+  };
+
   const handleOnClick = () => {
     if (
       props.initStatus === "source" &&
@@ -26,17 +43,32 @@ export default function Tile({ props, nodeIndex }) {
       !props.obstacles.includes(nodeIndex)
     ) {
       props.setTarget(nodeIndex);
-    } else if (
-      props.initStatus === "obstacle" &&
-      props.mainStatus === "initialization" &&
-      nodeIndex !== props.source &&
-      nodeIndex !== props.target
-    ) {
+    }
+  };
+
+  // for painting graph obstacles
+  const handleOnMouseDown = () => {
+    if (props.initStatus === "eraser") {
+
+
+      
+    } else if (props.initStatus === "obstacle" && isValidObstacle) {
+      props.setIsPainting(true);
       props.setObstacles([...props.obstacles, nodeIndex]);
     }
   };
+  const handleOnMouseUp = () => {
+    props.setIsPainting(false);
+  };
+  const handleOnMouseEnter = () => {
+    if (isValidObstacle && props.isPainting) {
+      props.setObstacles([...props.obstacles, nodeIndex]);
+    }
+  };
+
   return (
     <div
+      onDragStart={(e) => e.preventDefault()}
       className={`${styles.tileBox} ${
         props.target === nodeIndex ? styles.target : ""
       } ${props.source === nodeIndex ? styles.source : ""} ${
@@ -46,7 +78,12 @@ export default function Tile({ props, nodeIndex }) {
           ? styles.path
           : ""
       } ${props.obstacles.includes(nodeIndex) ? styles.obstacle : ""}`}
-      onClick={handleOnClick}
+      onClick={(e) => {
+        handleOnClick();
+      }}
+      onMouseDown={handleOnMouseDown}
+      onMouseEnter={handleOnMouseEnter}
+      onMouseUp={handleOnMouseUp}
     ></div>
   );
 }
