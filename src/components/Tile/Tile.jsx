@@ -9,17 +9,6 @@ export default function Tile({ props, nodeIndex, isPainting, setIsPainting }) {
     nodeIndex !== props.source &&
     nodeIndex !== props.target;
 
-  const handleObstacleSelect = () => {
-    if (
-      props.initStatus === "obstacle" &&
-      props.mainStatus === "initialization" &&
-      nodeIndex !== props.source &&
-      nodeIndex !== props.target
-    ) {
-      props.setObstacles([...props.obstacles, nodeIndex]);
-    }
-  };
-
   const handleOnClick = () => {
     if (
       props.initStatus === "source" &&
@@ -49,9 +38,10 @@ export default function Tile({ props, nodeIndex, isPainting, setIsPainting }) {
   // for painting graph obstacles
   const handleOnMouseDown = () => {
     if (props.initStatus === "eraser") {
-
-
-      
+      props.setIsErasing(true);
+      props.setObstacles((prevobstacles) =>
+        prevobstacles.filter((i) => i !== nodeIndex)
+      );
     } else if (props.initStatus === "obstacle" && isValidObstacle) {
       props.setIsPainting(true);
       props.setObstacles([...props.obstacles, nodeIndex]);
@@ -59,10 +49,17 @@ export default function Tile({ props, nodeIndex, isPainting, setIsPainting }) {
   };
   const handleOnMouseUp = () => {
     props.setIsPainting(false);
+    props.setIsErasing(false);
   };
+
   const handleOnMouseEnter = () => {
     if (isValidObstacle && props.isPainting) {
       props.setObstacles([...props.obstacles, nodeIndex]);
+    }
+    if (props.isErasing && props.obstacles.includes(nodeIndex)) {
+      props.setObstacles((prevObstacles) =>
+        prevObstacles.filter((i) => i !== nodeIndex)
+      );
     }
   };
 

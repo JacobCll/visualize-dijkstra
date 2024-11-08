@@ -172,7 +172,7 @@ export default function Body() {
         {obstacles.length > 0 && (
           <button
             className={styles.eraser}
-            disabled={obstacles.length === 0}
+            disabled={initStatus === "eraser" || mainStatus === "completed"}
             onClick={() => setInitStatus("eraser")}
           >
             Eraser

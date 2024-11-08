@@ -34,7 +34,13 @@ export default function Tiles({ props }) {
         {props.graph.map((m, i) => (
           <li key={i}>
             <Tile
-              props={{ ...props, isPainting, setIsPainting }}
+              props={{
+                ...props,
+                isPainting,
+                setIsPainting,
+                isErasing,
+                setIsErasing,
+              }}
               nodeIndex={i}
               isErasing
             />
