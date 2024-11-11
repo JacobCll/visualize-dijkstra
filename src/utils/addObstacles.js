@@ -5,36 +5,118 @@
  * @returns {Array}
  */
 export default function addObstacles(graphMatrix, obstacles, sideLength) {
-  let matrix = graphMatrix;
+  let matrix = graphMatrix.map((row) => [...row]);
+
+  const removeConnection = (node1, node2) => {
+    matrix[node1][node2] = 0;
+    matrix[node2][node1] = 0;
+  };
 
   for (const nodeIndex of obstacles) {
     const i = Math.floor(nodeIndex / sideLength);
     const j = nodeIndex - i * sideLength;
 
-    // upper
-    if (i > 0) {
-      const upperNode = nodeIndex - sideLength;
-      matrix[upperNode][nodeIndex] = 0;
-      matrix[nodeIndex][upperNode] = 0;
+    // Adjacent nodes (upper, bottom, left, right)
+    if (i > 0) removeConnection(nodeIndex, nodeIndex - sideLength); // upper
+    if (i < sideLength - 1) removeConnection(nodeIndex, nodeIndex + sideLength); // bottom
+    if (j > 0) removeConnection(nodeIndex, nodeIndex - 1); // left
+    if (j < sideLength - 1) removeConnection(nodeIndex, nodeIndex + 1); // right
+
+    // Diagonal nodes
+    if (i > 0 && j > 0) removeConnection(nodeIndex, nodeIndex - sideLength - 1); // upper-left
+    if (i > 0 && j < sideLength - 1)
+      removeConnection(nodeIndex, nodeIndex - sideLength + 1); // upper-right
+    if (i < sideLength - 1 && j > 0)
+      removeConnection(nodeIndex, nodeIndex + sideLength - 1); // lower-left
+    if (i < sideLength - 1 && j < sideLength - 1)
+      removeConnection(nodeIndex, nodeIndex + sideLength + 1); // lower-right
+  }
+
+  for (const nodeIndex of obstacles) {
+    const i = Math.floor(nodeIndex / sideLength);
+    const j = nodeIndex - i * sideLength;
+
+    const removeUpperLeftToBottomRight = (upperLeft, bottomRight) => {
+      removeConnection(upperLeft, bottomRight);
+    };
+
+    const removeUpperRightToBottomLeft = (upperRight, bottomLeft) => {
+      removeConnection(upperRight, bottomLeft);
+    };
+
+    if (i === 0) {
+      if (j === 0 && obstacles.includes(nodeIndex + sideLength + 1)) {
+        removeUpperRightToBottomLeft(nodeIndex + 1, nodeIndex + sideLength);
+      }
+      if (
+        j === sideLength - 1 &&
+        obstacles.includes(nodeIndex + sideLength - 1)
+      ) {
+        removeUpperLeftToBottomRight(nodeIndex - 1, nodeIndex + sideLength);
+      }
+      if (j > 0 && j < sideLength - 1) {
+        if (obstacles.includes(nodeIndex + sideLength - 1)) {
+          removeUpperLeftToBottomRight(nodeIndex - 1, nodeIndex + sideLength);
+        }
+        if (obstacles.includes(nodeIndex + sideLength + 1)) {
+          removeUpperRightToBottomLeft(nodeIndex + 1, nodeIndex + sideLength);
+        }
+      }
     }
-    // bottom
-    if (i < sideLength - 1) {
-      const lowerNode = nodeIndex + sideLength;
-      matrix[lowerNode][nodeIndex] = 0;
-      matrix[nodeIndex][lowerNode] = 0;
+
+    if (i > 0 && i < sideLength - 1) {
+      if (j === 0) {
+        if (obstacles.includes(nodeIndex - sideLength + 1)) {
+          removeUpperLeftToBottomRight(nodeIndex - sideLength, nodeIndex + 1);
+        }
+        if (obstacles.includes(nodeIndex + sideLength + 1)) {
+          removeUpperRightToBottomLeft(nodeIndex + 1, nodeIndex + sideLength);
+        }
+      }
+      if (j === sideLength - 1) {
+        if (obstacles.includes(nodeIndex - sideLength - 1)) {
+          removeUpperRightToBottomLeft(nodeIndex - sideLength, nodeIndex - 1);
+        }
+        if (obstacles.includes(nodeIndex + sideLength - 1)) {
+          removeUpperLeftToBottomRight(nodeIndex - 1, nodeIndex + sideLength);
+        }
+      }
+      if (j > 0 && j < sideLength - 1) {
+        if (obstacles.includes(nodeIndex - sideLength - 1)) {
+          removeUpperRightToBottomLeft(nodeIndex - sideLength, nodeIndex - 1);
+        }
+        if (obstacles.includes(nodeIndex + sideLength - 1)) {
+          removeUpperLeftToBottomRight(nodeIndex - 1, nodeIndex + sideLength);
+        }
+        if (obstacles.includes(nodeIndex - sideLength + 1)) {
+          removeUpperLeftToBottomRight(nodeIndex - sideLength, nodeIndex + 1);
+        }
+        if (obstacles.includes(nodeIndex + sideLength + 1)) {
+          removeUpperRightToBottomLeft(nodeIndex + 1, nodeIndex + sideLength);
+        }
+      }
     }
-    if (j > 0) {
-      // left
-      const leftNode = nodeIndex - 1;
-      matrix[leftNode][nodeIndex] = 0;
-      matrix[nodeIndex][leftNode] = 0;
-    }
-    // right
-    if (j < sideLength - 1) {
-      const rightNode = nodeIndex + 1;
-      matrix[rightNode][nodeIndex] = 0;
-      matrix[nodeIndex][rightNode] = 0;
+
+    if (i === sideLength - 1) {
+      if (j === 0 && obstacles.includes(nodeIndex - sideLength + 1)) {
+        removeUpperLeftToBottomRight(nodeIndex - sideLength, nodeIndex + 1);
+      }
+      if (
+        j === sideLength - 1 &&
+        obstacles.includes(nodeIndex - sideLength - 1)
+      ) {
+        removeUpperRightToBottomLeft(nodeIndex - sideLength, nodeIndex - 1);
+      }
+      if (j > 0 && j < sideLength - 1) {
+        if (obstacles.includes(nodeIndex - sideLength - 1)) {
+          removeUpperRightToBottomLeft(nodeIndex - sideLength, nodeIndex - 1);
+        }
+        if (obstacles.includes(nodeIndex + sideLength + 1)) {
+          removeUpperLeftToBottomRight(nodeIndex - sideLength, nodeIndex + 1);
+        }
+      }
     }
   }
+
   return matrix;
 }

@@ -3,77 +3,42 @@
  * @param {Number} side
  * @returns {Array}
  */
-export default function createMatrix(side) {
+export default function createMatrix(sideLength) {
   let matrix = [];
 
-  const size = side * side;
+  const size = sideLength * sideLength;
+
+  const createConnection = (node1, node2, val = 1) => {
+    matrix[node1][node2] = val;
+    matrix[node2][node1] = val;
+  };
 
   // for graph creation
   for (let i = 0; i < size; i++) {
     matrix.push(Array(size).fill(0));
   }
 
-  for (let i = 0; i < side; i++) {
-    for (let j = 0; j < side; j++) {
+  for (let i = 0; i < sideLength; i++) {
+    for (let j = 0; j < sideLength; j++) {
       // calculate current node index
-      const nodeIndex = i * side + j;
+      const nodeIndex = i * sideLength + j;
 
-      // upper
-      if (i > 0) {
-        const upperNode = nodeIndex - side;
-        matrix[upperNode][nodeIndex] = 1;
-        matrix[nodeIndex][upperNode] = 1;
-      }
+      // upper, button, left, right
+      if (i > 0) createConnection(nodeIndex, nodeIndex - sideLength);
+      if (i < sideLength - 1)
+        createConnection(nodeIndex, nodeIndex + sideLength);
+      if (j > 0) createConnection(nodeIndex, nodeIndex - 1);
+      if (j < sideLength - 1) createConnection(nodeIndex, nodeIndex + 1);
 
-      // bottom
-      if (i < side - 1) {
-        const lowerNode = nodeIndex + side;
-        matrix[lowerNode][nodeIndex] = 1;
-        matrix[nodeIndex][lowerNode] = 1;
-      }
-
-      if (j > 0) {
-        // left
-        const leftNode = nodeIndex - 1;
-        matrix[leftNode][nodeIndex] = 1;
-        matrix[nodeIndex][leftNode] = 1;
-      }
-
-      // right
-      if (j < side - 1) {
-        const rightNode = nodeIndex + 1;
-        matrix[rightNode][nodeIndex] = 1;
-        matrix[nodeIndex][rightNode] = 1;
-      }
-
-      // // DIAGONAL NODES
-      // // upper left diagonal
-      // if (i > 0 && j > 0) {
-      //   const upperLeftNode = nodeIndex - side - 1;
-      //   matrix[nodeIndex][upperLeftNode] = Math.sqrt(2);
-      //   matrix[upperLeftNode][nodeIndex] = Math.sqrt(2);
-      // }
-
-      // // upper right diagonal
-      // if (i > 0 && j < side - 1) {
-      //   const upperRightNode = nodeIndex - side + 1;
-      //   matrix[nodeIndex][upperRightNode] = Math.sqrt(2);
-      //   matrix[upperRightNode][nodeIndex] = Math.sqrt(2);
-      // }
-
-      // // bottom left diagonal
-      // if (i < side - 1 && j > 0) {
-      //   const lowerLeftNode = nodeIndex + side - 1;
-      //   matrix[nodeIndex][lowerLeftNode] = Math.sqrt(2);
-      //   matrix[lowerLeftNode][nodeIndex] = Math.sqrt(2);
-      // }
-
-      // // bottom right diagonal
-      // if (i < side - 1 && j < side - 1) {
-      //   const lowerRightNode = nodeIndex + side + 1;
-      //   matrix[nodeIndex][lowerRightNode] = Math.sqrt(2);
-      //   matrix[lowerRightNode][nodeIndex] = Math.sqrt(2);
-      // }
+      // upper left, right, bottom left, right diagonal
+      if (i > 0 && j > 0)
+        createConnection(nodeIndex, nodeIndex - sideLength - 1, Math.sqrt(2));
+      if (i > 0 && j < sideLength - 1)
+        createConnection(nodeIndex, nodeIndex - sideLength + 1, Math.sqrt(2));
+      if (i < sideLength - 1 && j > 0)
+        createConnection(nodeIndex, nodeIndex + sideLength - 1, Math.sqrt(2));
+      if (i < sideLength - 1 && j < sideLength - 1)
+        createConnection(nodeIndex, nodeIndex + sideLength + 1, Math.sqrt(2));
     }
   }
 

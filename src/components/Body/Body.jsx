@@ -1,7 +1,7 @@
+import { useEffect, useState } from "react";
 import styles from "./Body.module.css";
 import Tiles from "../Tiles/Tiles";
 import createMatrix from "../../utils/createMatrix";
-import { useEffect, useState } from "react";
 import addObstacles from "../../utils/addObstacles";
 
 // adjacency matrix
@@ -16,7 +16,7 @@ export default function Body() {
   const [mainStatus, setMainStatus] = useState("initialization");
 
   /**
-   * 2 initialization statuses
+   * 4 initialization statuses
    *  1. source - selection of source node
    *  2. target - selection of target node
    *  3. obstacle - setting graph obstacles
@@ -26,7 +26,8 @@ export default function Body() {
 
   const [sideLength, setSideLength] = useState(10);
 
-  const [graph, setGraph] = useState(() => createMatrix(sideLength));
+  const originalGraph = createMatrix(sideLength);
+  const [graph, setGraph] = useState(originalGraph);
 
   const [distances, setDistances] = useState(
     Array(graph.length).fill(Infinity)
@@ -60,7 +61,7 @@ export default function Body() {
   }, [sideLength]);
 
   useEffect(() => {
-    setGraph(() => addObstacles(graph, obstacles, sideLength));
+    setGraph(() => addObstacles(originalGraph, obstacles, sideLength));
   }, [obstacles]);
 
   // return the index with the minimum and unvisited distance value
@@ -98,6 +99,7 @@ export default function Body() {
         break;
       } else if (u == undefined) {
         setError("no path found");
+        setMainStatus("initialization");
         return;
       }
 
@@ -128,11 +130,12 @@ export default function Body() {
     setMainStatus("completed");
   };
 
+  console.log(obstacles);
   return (
     <div className={styles.bodyContainer}>
       <div className={styles.topControlPanel}>
         <div className={styles.sizeSelect}>
-          <label for="size-select">Select size:</label>
+          <label htmlFor="size-select">Select size:</label>
           <select
             name="sizes"
             id="size-select"
@@ -213,7 +216,6 @@ export default function Body() {
             className={styles.clearAllObstacles}
             onClick={() => {
               setObstacles([]);
-              setGraph(() => createMatrix(sideLength));
             }}
           >
             Clear all obstacles

@@ -47,6 +47,7 @@ export default function Tile({ props, nodeIndex, isPainting, setIsPainting }) {
       props.setObstacles([...props.obstacles, nodeIndex]);
     }
   };
+
   const handleOnMouseUp = () => {
     props.setIsPainting(false);
     props.setIsErasing(false);
@@ -55,8 +56,7 @@ export default function Tile({ props, nodeIndex, isPainting, setIsPainting }) {
   const handleOnMouseEnter = () => {
     if (isValidObstacle && props.isPainting) {
       props.setObstacles([...props.obstacles, nodeIndex]);
-    }
-    if (props.isErasing && props.obstacles.includes(nodeIndex)) {
+    } else if (props.isErasing && props.obstacles.includes(nodeIndex)) {
       props.setObstacles((prevObstacles) =>
         prevObstacles.filter((i) => i !== nodeIndex)
       );
