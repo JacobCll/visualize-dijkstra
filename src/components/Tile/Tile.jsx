@@ -1,20 +1,20 @@
 import styles from "./Tile.module.css";
-import { useState } from "react";
 
 // Tile component has all props of Tiles parent container
-export default function Tile({ props, nodeIndex, isPainting, setIsPainting }) {
+export default function Tile({ props, nodeIndex }) {
   const isValidObstacle =
     props.initStatus === "obstacle" &&
     props.mainStatus === "initialization" &&
     nodeIndex !== props.source &&
-    nodeIndex !== props.target;
+    nodeIndex !== props.target &&
+    !props.obstacles.has(nodeIndex);
 
   const handleOnClick = () => {
     if (
       props.initStatus === "source" &&
       props.mainStatus === "initialization" &&
       nodeIndex !== props.target &&
-      !props.obstacles.includes(nodeIndex)
+      !props.obstacles.has(nodeIndex)
     ) {
       const distances = Array(props.graph.length).fill(Infinity);
       const prevNodes = [];
@@ -29,7 +29,7 @@ export default function Tile({ props, nodeIndex, isPainting, setIsPainting }) {
       props.initStatus === "target" &&
       props.mainStatus === "initialization" &&
       nodeIndex !== props.source &&
-      !props.obstacles.includes(nodeIndex)
+      !props.obstacles.has(nodeIndex)
     ) {
       props.setTarget(nodeIndex);
     }
@@ -39,12 +39,16 @@ export default function Tile({ props, nodeIndex, isPainting, setIsPainting }) {
   const handleOnMouseDown = () => {
     if (props.initStatus === "eraser") {
       props.setIsErasing(true);
-      props.setObstacles((prevobstacles) =>
-        prevobstacles.filter((i) => i !== nodeIndex)
-      );
+      props.setObstacles((prevObstacles) => {
+        const newObstacles = new Set(prevObstacles);
+        newObstacles.delete(nodeIndex);
+        return newObstacles;
+      });
     } else if (props.initStatus === "obstacle" && isValidObstacle) {
       props.setIsPainting(true);
-      props.setObstacles([...props.obstacles, nodeIndex]);
+      props.setObstacles((prevObstacles) =>
+        new Set(prevObstacles).add(nodeIndex)
+      );
     }
   };
 
@@ -55,11 +59,15 @@ export default function Tile({ props, nodeIndex, isPainting, setIsPainting }) {
 
   const handleOnMouseEnter = () => {
     if (isValidObstacle && props.isPainting) {
-      props.setObstacles([...props.obstacles, nodeIndex]);
-    } else if (props.isErasing && props.obstacles.includes(nodeIndex)) {
       props.setObstacles((prevObstacles) =>
-        prevObstacles.filter((i) => i !== nodeIndex)
+        new Set(prevObstacles).add(nodeIndex)
       );
+    } else if (props.isErasing && props.obstacles.has(nodeIndex)) {
+      props.setObstacles((prevObstacles) => {
+        const newObstacles = new Set(prevObstacles);
+        newObstacles.delete(nodeIndex);
+        return newObstacles;
+      });
     }
   };
 
@@ -74,7 +82,7 @@ export default function Tile({ props, nodeIndex, isPainting, setIsPainting }) {
         nodeIndex !== props.target
           ? styles.path
           : ""
-      } ${props.obstacles.includes(nodeIndex) ? styles.obstacle : ""}`}
+      } ${props.obstacles.has(nodeIndex) ? styles.obstacle : ""}`}
       onClick={(e) => {
         handleOnClick();
       }}

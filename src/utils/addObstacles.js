@@ -45,20 +45,17 @@ export default function addObstacles(graphMatrix, obstacles, sideLength) {
     };
 
     if (i === 0) {
-      if (j === 0 && obstacles.includes(nodeIndex + sideLength + 1)) {
+      if (j === 0 && obstacles.has(nodeIndex + sideLength + 1)) {
         removeUpperRightToBottomLeft(nodeIndex + 1, nodeIndex + sideLength);
       }
-      if (
-        j === sideLength - 1 &&
-        obstacles.includes(nodeIndex + sideLength - 1)
-      ) {
+      if (j === sideLength - 1 && obstacles.has(nodeIndex + sideLength - 1)) {
         removeUpperLeftToBottomRight(nodeIndex - 1, nodeIndex + sideLength);
       }
       if (j > 0 && j < sideLength - 1) {
-        if (obstacles.includes(nodeIndex + sideLength - 1)) {
+        if (obstacles.has(nodeIndex + sideLength - 1)) {
           removeUpperLeftToBottomRight(nodeIndex - 1, nodeIndex + sideLength);
         }
-        if (obstacles.includes(nodeIndex + sideLength + 1)) {
+        if (obstacles.has(nodeIndex + sideLength + 1)) {
           removeUpperRightToBottomLeft(nodeIndex + 1, nodeIndex + sideLength);
         }
       }
@@ -66,52 +63,49 @@ export default function addObstacles(graphMatrix, obstacles, sideLength) {
 
     if (i > 0 && i < sideLength - 1) {
       if (j === 0) {
-        if (obstacles.includes(nodeIndex - sideLength + 1)) {
+        if (obstacles.has(nodeIndex - sideLength + 1)) {
           removeUpperLeftToBottomRight(nodeIndex - sideLength, nodeIndex + 1);
         }
-        if (obstacles.includes(nodeIndex + sideLength + 1)) {
+        if (obstacles.has(nodeIndex + sideLength + 1)) {
           removeUpperRightToBottomLeft(nodeIndex + 1, nodeIndex + sideLength);
         }
       }
       if (j === sideLength - 1) {
-        if (obstacles.includes(nodeIndex - sideLength - 1)) {
+        if (obstacles.has(nodeIndex - sideLength - 1)) {
           removeUpperRightToBottomLeft(nodeIndex - sideLength, nodeIndex - 1);
         }
-        if (obstacles.includes(nodeIndex + sideLength - 1)) {
+        if (obstacles.has(nodeIndex + sideLength - 1)) {
           removeUpperLeftToBottomRight(nodeIndex - 1, nodeIndex + sideLength);
         }
       }
       if (j > 0 && j < sideLength - 1) {
-        if (obstacles.includes(nodeIndex - sideLength - 1)) {
+        if (obstacles.has(nodeIndex - sideLength - 1)) {
           removeUpperRightToBottomLeft(nodeIndex - sideLength, nodeIndex - 1);
         }
-        if (obstacles.includes(nodeIndex + sideLength - 1)) {
+        if (obstacles.has(nodeIndex + sideLength - 1)) {
           removeUpperLeftToBottomRight(nodeIndex - 1, nodeIndex + sideLength);
         }
-        if (obstacles.includes(nodeIndex - sideLength + 1)) {
+        if (obstacles.has(nodeIndex - sideLength + 1)) {
           removeUpperLeftToBottomRight(nodeIndex - sideLength, nodeIndex + 1);
         }
-        if (obstacles.includes(nodeIndex + sideLength + 1)) {
+        if (obstacles.has(nodeIndex + sideLength + 1)) {
           removeUpperRightToBottomLeft(nodeIndex + 1, nodeIndex + sideLength);
         }
       }
     }
 
     if (i === sideLength - 1) {
-      if (j === 0 && obstacles.includes(nodeIndex - sideLength + 1)) {
+      if (j === 0 && obstacles.has(nodeIndex - sideLength + 1)) {
         removeUpperLeftToBottomRight(nodeIndex - sideLength, nodeIndex + 1);
       }
-      if (
-        j === sideLength - 1 &&
-        obstacles.includes(nodeIndex - sideLength - 1)
-      ) {
+      if (j === sideLength - 1 && obstacles.has(nodeIndex - sideLength - 1)) {
         removeUpperRightToBottomLeft(nodeIndex - sideLength, nodeIndex - 1);
       }
       if (j > 0 && j < sideLength - 1) {
-        if (obstacles.includes(nodeIndex - sideLength - 1)) {
+        if (obstacles.has(nodeIndex - sideLength - 1)) {
           removeUpperRightToBottomLeft(nodeIndex - sideLength, nodeIndex - 1);
         }
-        if (obstacles.includes(nodeIndex + sideLength + 1)) {
+        if (obstacles.has(nodeIndex + sideLength + 1)) {
           removeUpperLeftToBottomRight(nodeIndex - sideLength, nodeIndex + 1);
         }
       }

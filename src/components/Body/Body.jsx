@@ -24,7 +24,7 @@ export default function Body() {
    */
   const [initStatus, setInitStatus] = useState("source");
 
-  const [sideLength, setSideLength] = useState(10);
+  const [sideLength, setSideLength] = useState(15);
 
   const originalGraph = createMatrix(sideLength);
   const [graph, setGraph] = useState(originalGraph);
@@ -37,7 +37,7 @@ export default function Body() {
 
   const [source, setSource] = useState(null);
   const [target, setTarget] = useState(null);
-  const [obstacles, setObstacles] = useState([]);
+  const [obstacles, setObstacles] = useState(new Set([]));
 
   const [nodePath, setNodePath] = useState([]);
 
@@ -56,7 +56,7 @@ export default function Body() {
   useEffect(() => {
     // when graph size changes, reset everything
     setGraph(() => createMatrix(sideLength));
-    setObstacles([]);
+    setObstacles(new Set([]));
     reset();
   }, [sideLength]);
 
@@ -130,7 +130,17 @@ export default function Body() {
     setMainStatus("completed");
   };
 
-  console.log(obstacles);
+  const generateRandomObstacles = () => {
+    reset();
+    setObstacles(new Set([]));
+    const n = Math.floor((graph.length - 1) / 3);
+    let tempObs = new Set([]);
+    for (let i = 0; i < n; i++) {
+      tempObs.add(Math.floor(Math.random() * (graph.length - 1)));
+    }
+    setObstacles(tempObs);
+  };
+
   return (
     <div className={styles.bodyContainer}>
       <div className={styles.topControlPanel}>
@@ -172,20 +182,13 @@ export default function Body() {
         >
           Set obstacles
         </button>
-        {obstacles.length > 0 && (
-          <button
-            className={styles.eraser}
-            disabled={initStatus === "eraser" || mainStatus === "completed"}
-            onClick={() => setInitStatus("eraser")}
-          >
-            Eraser
-          </button>
-        )}
+        <button onClick={generateRandomObstacles}>Generate obstacles</button>
       </div>
       {error && <p className={styles.error}>{error}</p>}
       <Tiles
         props={{
           graph,
+          sideLength,
           distances,
           setDistances,
           visited,
@@ -205,17 +208,29 @@ export default function Body() {
       />
       <div className={styles.bottomControlPanel}>
         <button
+          className={styles.start}
           disabled={mainStatus === "computation" || mainStatus === "completed"}
           onClick={handleOnStart}
         >
           Start
         </button>
-        <button onClick={reset}>Reset</button>
-        {obstacles.length > 0 && (
+        <button className={styles.reset} onClick={reset}>
+          Reset
+        </button>
+        {obstacles.size > 0 && (
+          <button
+            className={styles.eraser}
+            disabled={initStatus === "eraser" || mainStatus === "completed"}
+            onClick={() => setInitStatus("eraser")}
+          >
+            Eraser
+          </button>
+        )}
+        {obstacles.size > 0 && (
           <button
             className={styles.clearAllObstacles}
             onClick={() => {
-              setObstacles([]);
+              setObstacles(new Set([]));
             }}
           >
             Clear all obstacles

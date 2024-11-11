@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 export default function Tiles({ props }) {
   // setting up the Tiles component
   useEffect(() => {
+    console.log("Recalculated container size.");
     const side = Math.sqrt(props.graph.length);
 
     const tileBoxElement = document.getElementsByClassName(
@@ -20,7 +21,7 @@ export default function Tiles({ props }) {
 
     tilesContainerElement.style.width = `${tilesContainerSize}px`;
     tilesContainerElement.style.height = `${tilesContainerSize}px`;
-  }, [props.graph]);
+  }, [props.graph.length]);
 
   const [isPainting, setIsPainting] = useState(false);
   const [isErasing, setIsErasing] = useState(false);
@@ -28,25 +29,24 @@ export default function Tiles({ props }) {
   return (
     <div
       className={styles.tilesContainer}
-      onMouseLeave={() => setIsPainting(false)}
+      onMouseLeave={() => {
+        setIsPainting(false);
+        setIsErasing(false);
+      }}
     >
-      <ul>
-        {props.graph.map((m, i) => (
-          <li key={i}>
-            <Tile
-              props={{
-                ...props,
-                isPainting,
-                setIsPainting,
-                isErasing,
-                setIsErasing,
-              }}
-              nodeIndex={i}
-              isErasing
-            />
-          </li>
-        ))}
-      </ul>
+      {props.graph.map((m, i) => (
+        <Tile
+          key={i}
+          props={{
+            ...props,
+            isPainting,
+            setIsPainting,
+            isErasing,
+            setIsErasing,
+          }}
+          nodeIndex={i}
+        />
+      ))}
     </div>
   );
 }
